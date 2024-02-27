@@ -8,7 +8,7 @@ const {Server} = require('socket.io')
 const server = http.createServer(app)
 const io = new Server(server, {
     cors:{
-        origin:"http://localhost:3000",
+        origin:"http://localhost:5173",
         methods: ["GET", "POST"],
     }
 })
@@ -20,26 +20,26 @@ const io = new Server(server, {
 
 // })
 // ? Middleware
-// app.use(express.json())
-// app.use(cors())
+app.use(express.json())
+app.use(cors())
 
 // ? Routes
 // app.use('/api/auth',require('./routes/auth'))
 // app.use('/api/message',require('./routes/messages'))
 
 // ? Socket.io
-io.on('connection',(socket)=>{
+io.on("connection",(socket)=>{
     console.log(`User Connected: ${socket.id}`)
 
-    socket.on('join_room',(data)=>{
+    socket.on("join_room",(data)=>{
         socket.join(data)
-        console.log(`User with ID: ${socket.id}`)
+        console.log(`User with ID: ${socket.id} joined room`)
     })
-    socket.on('sendMessage',(data)=>{
-        socket.to(data.room).emit('receive_message',data)
+    socket.on("send_message",(data)=>{
+        io.to(data.room).emit("receive_message",data)
         
     })
-    socket.on('disconnect',()=>{
+    socket.on("disconnect",()=>{
         console.log("User disconnected",socket.id)
     })
 })
