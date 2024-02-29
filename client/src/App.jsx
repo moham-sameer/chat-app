@@ -17,11 +17,14 @@ const App = () => {
 
   return (
     <div>
-    {!showChat? (<div>
-      <h3>Join a chat</h3>
-      <input type='text' placeholder='John...' onChange={(e)=>{setUsername(e.target.value)}}/>
-      <input type='text' placeholder='Room ID...' onChange={(e)=>{setRoom(e.target.value)}}/>
-      <button onClick={joinRoom}>Join A Room</button>
+    {!showChat? (<div className='flex  items-center  justify-center h-screen'>
+      <div className='flex shadow-lg space-y-4 flex-col border justify-center w-[18rem] h-[20rem] items-center border-gray-400'>
+
+      <h3 className='text-red-600 text-2xl pt-3 font-serif font-bold'>Join a chat</h3>
+      <input className='w-[12rem] border outline-none p-1  border-gray-200' type='text' placeholder='John...' onChange={(e)=>{setUsername(e.target.value)}}/>
+      <input className='w-[12rem] border border-gray-200 p-1 outline-none' type='text' placeholder='Room ID...' onChange={(e)=>{setRoom(e.target.value)}}/>
+      <button onClick={joinRoom} className='p-3 bg-green-900 text-white rounded-lg border  border-gray-200'>Enter Room</button>
+      </div>
     </div>):(<Chat socket={socket} room={room} username={username}/>)}
     </div>
   )
