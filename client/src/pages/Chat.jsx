@@ -5,7 +5,7 @@ const Chat = ({socket,username,room}) => {
  const [messageList,setMessageList] = useState([])
 
  const sendMessage = async()=>{
-  if(currentMessage !== ""){
+  if(currentMessage.trim() !== ""){
     const messageData = {
       room: room,
       author: username,
@@ -13,7 +13,7 @@ const Chat = ({socket,username,room}) => {
       time:new Date(Date.now()).getHours()+":"+ new Date(Date.now()).getMinutes(),
     }
     await socket.emit("send_message",messageData);
-    setMessageList((list)=>[...list,messageData])
+    // setMessageList((list)=>[...list,messageData])
     setCurrentMessage("")
   }
  }
@@ -22,6 +22,9 @@ const Chat = ({socket,username,room}) => {
     setMessageList((list)=>[...list,data])
     console.log(data)
   })
+  return () => {
+    socket.off("receive_message");
+  };
  },[socket])
   return (
     <div>
