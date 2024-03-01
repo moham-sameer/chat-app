@@ -1,9 +1,8 @@
 import React, { useEffect, useState,useRef } from 'react'
 
-const Chat = ({socket,username,room}) => {
+const Chat = ({socket,username,room,users}) => {
  const [currentMessage,setCurrentMessage] = useState("")
  const [messageList,setMessageList] = useState([])
-
  const sendMessage = async()=>{
   if(currentMessage.trim() !== ""){
     const messageData = {
@@ -32,6 +31,13 @@ const Chat = ({socket,username,room}) => {
  },[socket])
   return (
     <div className='flex flex-col justify-center items-center h-screen'>
+            <div className='fixed left-[2rem] top-4'>
+              {users.map((user,index)=>{
+                return(
+                  <li key={index}>{user}</li>
+                )
+              })}
+            </div>
       <div className='w-[18rem] sm:w-[26rem] md:w-[34rem] lg:w-[45rem]   h-[30rem] overflow-y-auto  scrollbar-none scrollbar-thumb-gray-400 scrollbar-track-gray-100'>
       {messageList.map((messageContent,index)=>{
         const messageClass = username === messageContent.author ? 'bg-blue-500 text-white':'bg-gray-200 text-black'
@@ -52,7 +58,7 @@ const Chat = ({socket,username,room}) => {
       })}
       </div>
       <div className='border px-4 sm:w-[26rem] md:w-[34rem] border-slate-300 rounded-2xl flex justify-center items-center  h-[3.5rem]  w-[18rem] lg:w-[45rem]'>
-        <input className='w-[24rem] lg:w-[45rem] h-[3rem]  outline-none ' type='text' value={currentMessage} placeholder='Hey...' onChange={(e)=>setCurrentMessage(e.target.value)} onKeyPress={(e)=>{e.key === "Enter" && sendMessage()}}/>
+        <input className='w-[24rem] md:w-[36rem] lg:w-[45rem] h-[3rem]  outline-none ' type='text' value={currentMessage} placeholder='Hey...' onChange={(e)=>setCurrentMessage(e.target.value)} onKeyPress={(e)=>{e.key === "Enter" && sendMessage()}}/>
         <button onClick={sendMessage} className=' ml-2 text-xl bg-gray-300 rounded-lg'>&#9658;</button>
       </div>
     </div>

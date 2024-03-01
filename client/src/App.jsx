@@ -6,7 +6,20 @@ const App = () => {
   const [username,setUsername] = useState("")
   const [room,setRoom] = useState("")
   const [showChat,setShowChat] = useState(false)
+  const [users,setUsers] = useState([])
   
+  useEffect(()=>{
+    socket.on('updateUserList',(userList) =>{
+      setUsers(userList)
+      
+    })
+    // Cleanup on unmount or disconnect 
+    return ()=>{
+      socket.off('updateUserList')
+    }
+  },[])
+
+
   const joinRoom = ()=>{
     if(username !== "" && room !== ""){
       socket.emit("join_room",room);
@@ -25,7 +38,7 @@ const App = () => {
       <input className='w-[12rem] border border-gray-200 p-1 outline-none' type='text' placeholder='Room ID...' onChange={(e)=>{setRoom(e.target.value)}}/>
       <button onClick={joinRoom} className='p-3 bg-green-900 text-white rounded-lg border  border-gray-200'>Enter Room</button>
       </div>
-    </div>):(<Chat socket={socket} room={room} username={username}/>)}
+    </div>):(<Chat users={users} socket={socket} room={room} username={username}/>)}
     </div>
   )
 }

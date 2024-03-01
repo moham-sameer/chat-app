@@ -1,10 +1,8 @@
 const express = require('express')
 const app = express()
-const mongoose = require('mongoose')
 const http = require('http')
 const cors = require('cors')
 const {Server} = require('socket.io')
-const Message = require('./model/product')
 require('./db/connect')
 const server = http.createServer(app)
 const io = new Server(server, {
@@ -31,15 +29,21 @@ app.use(cors())
 // ? Socket.io
 io.on("connection",(socket)=>{
     console.log(`User Connected: ${socket.id}`)
-
+     //! Handle joining room
     socket.on("join_room",(data)=>{
         socket.join(data)
         console.log(`User with ID: ${socket.id} joined room`)
+        io.to(data).emit('updateUserList', getUsersInRoom(data))
     })
-    socket.on("send_message",async(data)=>{
+    //! Handle Leaving the room
+    socket.on('leaveRoom',(room)=>{
+        socket.leave(room);
+        // update list of users in the room
+        io.to(room).emit('updateUserList',getUsersInRoom(room))
+    })
+    socket.on("send_message",(data)=>{
         try {
-            const message = new Message(data)
-            await message.save();
+            
             io.to(data.room).emit("receive_message",data)
         } catch (error) {
             console.error("Error saving message:",error)
@@ -51,11 +55,16 @@ io.on("connection",(socket)=>{
     })
 })
 
-mongoose.connection.on('connected', () => {
-    console.log('Connected to MongoDB');
+function getUsersInRoom(room){
+ const clients = io.sockets.adapter.rooms.get(room)
+  if(clients){
+    return Array.from(clients).map(socketId => io.sockets.sockets.get(socketId).username)
+  }
+  return[];
+}
+
   const PORT = 3000;
     // Start listening for connections
     server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
-  });
